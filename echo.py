@@ -1,25 +1,22 @@
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
 # Replace 'YOUR_TOKEN' with your bot's API token
 TOKEN = '7244701752:AAErthlFv4llgquDNHkUSWCbX-YZhPP_iKA'
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Hello! I am your echo bot. Send me any message, and I will echo it back.')
+async def start(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text('Hello! I am your echo bot. Send me any message, and I will echo it back.')
 
-def echo(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(update.message.text)
+async def echo(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text(update.message.text)
 
 def main() -> None:
-    updater = Updater(TOKEN)
+    application = Application.builder().token(TOKEN).build()
 
-    dp = updater.dispatcher
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
-
-    updater.start_polling()
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
